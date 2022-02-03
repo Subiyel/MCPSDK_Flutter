@@ -1,0 +1,4 @@
+framework module MCPSDK {
+  header "MCPSDK-Swift.h"
+  requires objc
+}

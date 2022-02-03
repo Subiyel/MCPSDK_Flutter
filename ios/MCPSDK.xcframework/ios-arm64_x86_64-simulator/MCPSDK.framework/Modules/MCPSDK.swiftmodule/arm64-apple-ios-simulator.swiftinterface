@@ -1,0 +1,176 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.5 (swiftlang-1300.0.31.1 clang-1300.0.29.1)
+// swift-module-flags: -target arm64-apple-ios11.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name MCPSDK
+import AdSupport
+import CommonCrypto
+import Foundation
+import PassKit
+import Swift
+import SystemConfiguration
+import UIKit
+import WatchConnectivity
+import WebKit
+import _Concurrency
+public typealias MCPCallBack = (_ viewController: MCPSDK.MCPSDKTask) -> Swift.Void
+public protocol MCPInAppPushProvCallBack : AnyObject {
+  func onSupported(wallet: MCPSDK.MCPInAppPushProvisioning)
+  func onNotSupported(code: Swift.String, desc: Swift.String)
+  func walletStatusOnSuccess(cardRefNo: Swift.String, passState: MCPSDK.MCPWalletState)
+}
+public struct RemotePassStatus {
+  public var remotePassStatus: MCPSDK.MCPWalletState
+  public var deviceName: Swift.String
+}
+public struct PassStatus {
+  public var iPhonePassStatus: MCPSDK.MCPWalletState
+  public var remotePassStauses: MCPSDK.RemotePassStatus
+}
+public enum MCPWalletState {
+  case activated
+  case requiresActivation
+  case activating
+  case suspended
+  case deactivated
+  case notAdded
+  case watchNotConnected
+  public static func == (a: MCPSDK.MCPWalletState, b: MCPSDK.MCPWalletState) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public enum LoadingOptions : Swift.Int {
+  case preLoad
+  case loadOnScreen
+  public init?(rawValue: Swift.Int)
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+public enum Localization : Swift.String {
+  case english
+  case portugese
+  case spanish
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers public class UIConfiguration : ObjectiveC.NSObject {
+  public var hideNavigationbar: Swift.Bool
+  public var navBarTextColor: UIKit.UIColor?
+  public var navBarBGColor: UIKit.UIColor?
+  public var navTitle: Swift.String?
+  public var hideBackButton: Swift.Bool
+  public var canGoBack: Swift.Bool
+  public var loadingOption: MCPSDK.LoadingOptions
+  public var alertSize: CoreGraphics.CGSize
+  public var backTitle: Swift.String?
+  public var backImage: UIKit.UIImage?
+  public var backBtnTxt: Swift.String?
+  public var backBtnImg: UIKit.UIImage?
+  public var dialogCloseImg: UIKit.UIImage?
+  public var backgroundColor: UIKit.UIColor?
+  public var loadingIndicatorColor: UIKit.UIColor?
+  public var localizationOption: MCPSDK.Localization?
+  @objc override dynamic public init()
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers public class MCPSDKManager {
+  public class func setUIConfiguration(_ config: MCPSDK.UIConfiguration)
+  public class func initSDK(_ appId: Swift.String, apiKey: Swift.String)
+  public class func startTask(_ taskID: Swift.String, delegate: MCPSDK.MCPSDKCallBack, params: [Swift.String : Swift.String], parentVC: UIKit.UIViewController, viewNavigationStyle: MCPSDK.NavigationMethod, callBack: @escaping MCPSDK.MCPCallBack)
+  public class func preloadTaskList(_ params: [Swift.String : Swift.String], mcpsdkCallback: MCPSDK.MCPSDKCallBack)
+  @objc deinit
+}
+public enum MCPPushProvisioningProvider {
+  case apple
+  public init()
+  public func getWallet() -> MCPSDK.MCPPushProvisioningConfigure
+  public static func == (a: MCPSDK.MCPPushProvisioningProvider, b: MCPSDK.MCPPushProvisioningProvider) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public protocol MCPPushProvisioningConfigure : AnyObject {
+  func canAddCard(pushProvCallBack: MCPSDK.MCPInAppPushProvCallBack, errorCallBack: MCPSDK.MCPSDKCallBack, viewController: UIKit.UIViewController)
+}
+public protocol MCPInAppPushProvisioning : AnyObject {
+  func getStatus(cardRefNo: Swift.String, authToken: Swift.String, additionalCardRef: [Swift.String], statusList: @escaping ([Swift.String : MCPSDK.PassStatus]) -> Swift.Void)
+  func getStatus(cardRefNo: Swift.String, authToken: Swift.String, statusList: @escaping ([Swift.String : MCPSDK.PassStatus]) -> Swift.Void)
+  func pushCard(cardRef: Swift.String, signoutToken: Swift.String, otpDelegate: MCPSDK.MCPOTPDelegate)
+  func getPassActivationURL(cardRefNo: Swift.String) -> Foundation.URL?
+}
+public protocol MCPOTPDelegate : AnyObject {
+  func showOTPVerificationUI(maskedEmail: Swift.String, maskedPhone: Swift.String, codeLength: Swift.String, verificationFieldType: MCPSDK.MCPOTPVerificationOpt, otpCodeExpiryTime: Swift.String, otpCodeCallBack: @escaping (Swift.String) -> Swift.Void)
+  func invalidOTP()
+  func selectOtpChannel(selectOtpChannelCallback: @escaping (MCPSDK.MCPChannelType) -> Swift.Void)
+  func enableResendOTPButton(resendOtpChannelCallback: @escaping () -> Swift.Void)
+  func onOtpGenerationFailed(errorCode: Swift.String, errorDesc: Swift.String)
+  func timeLeftToResendCode(seconds: Swift.Int)
+  func resendOTPCodeIfRequired()
+  func disableResendOTPButton()
+}
+public enum MCPChannelType : Swift.String {
+  case sms
+  case email
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum MCPOTPVerificationOpt : Swift.String {
+  case email
+  case sms
+  case option
+  case global
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum NavigationMethod : Swift.Int {
+  case push
+  case present
+  case alert
+  public init?(rawValue: Swift.Int)
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+public protocol MCPSDKCallBack : ObjectiveC.NSObject {
+  func onLoadingStarted() -> Swift.Bool
+  func onLoadingCompleted()
+  func onSuccess(responsePayload: [Swift.String : Swift.String])
+  func onError(errorCode: Swift.String, errorDesc: Swift.String)
+  func onClosed()
+}
+@objc @_hasMissingDesignatedInitializers public class MCPSDKTask : ObjectiveC.NSObject {
+  public func finish()
+  @objc deinit
+}
+extension MCPSDK.MCPWalletState : Swift.Equatable {}
+extension MCPSDK.MCPWalletState : Swift.Hashable {}
+extension MCPSDK.LoadingOptions : Swift.Equatable {}
+extension MCPSDK.LoadingOptions : Swift.Hashable {}
+extension MCPSDK.LoadingOptions : Swift.RawRepresentable {}
+extension MCPSDK.Localization : Swift.Equatable {}
+extension MCPSDK.Localization : Swift.Hashable {}
+extension MCPSDK.Localization : Swift.RawRepresentable {}
+extension MCPSDK.MCPPushProvisioningProvider : Swift.Equatable {}
+extension MCPSDK.MCPPushProvisioningProvider : Swift.Hashable {}
+extension MCPSDK.MCPChannelType : Swift.Equatable {}
+extension MCPSDK.MCPChannelType : Swift.Hashable {}
+extension MCPSDK.MCPChannelType : Swift.RawRepresentable {}
+extension MCPSDK.MCPOTPVerificationOpt : Swift.Equatable {}
+extension MCPSDK.MCPOTPVerificationOpt : Swift.Hashable {}
+extension MCPSDK.MCPOTPVerificationOpt : Swift.RawRepresentable {}
+extension MCPSDK.NavigationMethod : Swift.Equatable {}
+extension MCPSDK.NavigationMethod : Swift.Hashable {}
+extension MCPSDK.NavigationMethod : Swift.RawRepresentable {}
